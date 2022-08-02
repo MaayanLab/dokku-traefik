@@ -16,7 +16,7 @@ cmd-traefik-list() {
 }
 
 cmd-traefik-enable() {
-  declare APP="$1"
+  declare APP="$2"
   echo "Configuring ${APP}..."
   cat <<EOF > "${PLUGIN_DATA_ROOT}/config/${APP}.yaml"
 http:
@@ -36,7 +36,7 @@ http:
 EOF
 }
 cmd-traefik-disable() {
-  declare APP="$1"
+  declare APP="$2"
   echo "Disabling ${APP}..."
   rm "${PLUGIN_DATA_ROOT}/config/${APP}.yaml"
 }
