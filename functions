@@ -42,6 +42,8 @@ cmd-traefik-disable() {
 }
 
 cmd-traefik-configure() {
+  eval "$(config_export global)"
+
   if [[ "${LETSENCRYPT_EMAIL}" == "" ]]; then 
     echo "LETSENCRYPT_EMAIL is required";
     exit 1;
