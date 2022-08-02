@@ -81,9 +81,9 @@ cmd-traefik-start() {
     --name="${PLUGIN_CONTAINER_NAME}" \
     --network=host \
     --restart=unless-stopped \
-    -v "${PLUGIN_DATA_ROOT}/traefik.yaml:/etc/traefik/traefik.yaml"
-    -v "${PLUGIN_DATA_ROOT}/config/:/config"
-    -v "${PLUGIN_DATA_ROOT}/data/:/data"
+    -v "${PLUGIN_DATA_ROOT}/traefik.yaml:/etc/traefik/traefik.yaml" \
+    -v "${PLUGIN_DATA_ROOT}/config/:/config" \
+    -v "${PLUGIN_DATA_ROOT}/data/:/data" \
     traefik
 }
 
