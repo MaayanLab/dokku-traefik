@@ -18,7 +18,7 @@ plugin-install() {
 
   pull-docker-image "${PLUGIN_IMAGE}:${PLUGIN_IMAGE_VERSION}"
 
-  mkdir -p "${PLUGIN_DATA_ROOT}"
+  mkdir -p "${PLUGIN_DATA_ROOT}" "${PLUGIN_DATA_ROOT}/config/" "${PLUGIN_DATA_ROOT}/data/"
   chown -R "${DOKKU_SYSTEM_USER}:${DOKKU_SYSTEM_GROUP}" "${PLUGIN_DATA_ROOT}"
 }
 
