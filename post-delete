@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+source "$PLUGIN_AVAILABLE_PATH/traefik/command-functions"
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+# get app
+APP="$1"
+
+# check if there is a PORTS file
+if [ -f $DOKKU_ROOT/$APP/PORTS ]; then
+  echo "-----> Removing traefik configuration"
+  cmd-traefik-disable $APP
+fi

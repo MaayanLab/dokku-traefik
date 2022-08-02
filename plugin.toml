@@ -1,0 +1,4 @@
+[plugin]
+description = "traefik tcp load balancer for dokku"
+version = "0.1.0"
+[plugin.config]
