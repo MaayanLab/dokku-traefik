@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/config"
-source "$PLUGIN_AVAILABLE_PATH/traefik/internal-functions"
 set -eo pipefail
 [[ $DOKKU_TRACE ]] && set -x
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common-functions"
@@ -11,7 +10,7 @@ if [[ -f "$PLUGIN_AVAILABLE_PATH/docker-options/functions" ]]; then
 fi
 
 cmd-traefik-list() {
-  ls "${DOKKU_LIB_ROOT}/data/traefik/config/" | while read line; do
+  ls "${PLUGIN_DATA_ROOT}/config/" | while read line; do
     declare APP="$(basename ${line} .yaml)";
     echo "${APP}";
   done
@@ -20,7 +19,7 @@ cmd-traefik-list() {
 cmd-traefik-enable() {
   declare APP="$1"
   echo "Configuring ${APP}..."
-  cat <<EOF > "${DOKKU_LIB_ROOT}/data/traefik/config/${APP}.yaml"
+  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/${APP}.yaml"
 http:
   routers:
     ${APP}:
@@ -40,7 +39,7 @@ EOF
 cmd-traefik-disable() {
   declare APP="$1"
   echo "Disabling ${APP}..."
-  rm "${DOKKU_LIB_ROOT}/data/traefik/config/${APP}.yaml"
+  rm "${PLUGIN_DATA_ROOT}/config/${APP}.yaml"
 }
 
 cmd-traefik-configure() {
@@ -49,8 +48,8 @@ cmd-traefik-configure() {
     exit 1;
   fi
 
-  mkdir -p "${DOKKU_LIB_ROOT}/data/traefik/config" "${DOKKU_LIB_ROOT}/data/traefik/data"
-  cat <<EOF > "${DOKKU_LIB_ROOT}/data/traefik/traefik.yaml"
+  mkdir -p "${PLUGIN_DATA_ROOT}/config" "${PLUGIN_DATA_ROOT}/data"
+  cat <<EOF > "${PLUGIN_DATA_ROOT}/traefik.yaml"
 providers:
   file:
     directory: /config
@@ -81,9 +80,9 @@ cmd-traefik-start() {
     --name="${PLUGIN_CONTAINER_NAME}" \
     --network=host \
     --restart=unless-stopped \
-    -v "${DOKKU_LIB_ROOT}/data/traefik/traefik.yaml:/etc/traefik/traefik.yaml"
-    -v "${DOKKU_LIB_ROOT}/data/traefik/config:/config"
-    -v "${DOKKU_LIB_ROOT}/data/traefik/data:/data"
+    -v "${PLUGIN_DATA_ROOT}/traefik.yaml:/etc/traefik/traefik.yaml"
+    -v "${PLUGIN_DATA_ROOT}/config/:/config"
+    -v "${PLUGIN_DATA_ROOT}/data/:/data"
     traefik
 }
 
