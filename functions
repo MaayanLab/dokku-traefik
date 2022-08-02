@@ -48,8 +48,8 @@ cmd-traefik-disable() {
 cmd-traefik-configure() {
   eval "$(config_export global)"
 
-  if [[ "${LETSENCRYPT_EMAIL}" == "" ]]; then 
-    echo "LETSENCRYPT_EMAIL is required";
+  if [[ "${DOKKU_LETSENCRYPT_EMAIL}" == "" ]]; then 
+    echo "DOKKU_LETSENCRYPT_EMAIL is required, please set it with dokku config:set DOKKU_LETSENCRYPT_EMAIL=email@example.com --global";
     exit 1;
   fi
 
@@ -67,7 +67,7 @@ entryPoints:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: "${LETSENCRYPT_EMAIL}"
+      email: "${DOKKU_LETSENCRYPT_EMAIL}"
       storage: "/data/acme.json"
       tlsChallenge: {}
 EOF
