@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-[[ " help traefik:help " == *" $1 "* ]] || exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
-source "$PLUGIN_AVAILABLE_PATH/traefik/help-functions"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/config"
+[[ " help $PLUGIN_COMMAND_PREFIX:help $PLUGIN_COMMAND_PREFIX $PLUGIN_COMMAND_PREFIX:default " == *" $1 "* ]] || [[ "$1" == "$PLUGIN_COMMAND_PREFIX:"* ]] || exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 set -eo pipefail
 [[ $DOKKU_TRACE ]] && set -x
 
-case "$1" in
-  help | traefik:help)
-    cmd-traefik-help "$@"
-    ;;
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/help-functions"
 
-  *)
-    exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
-    ;;
+if [[ ! -d $PLUGIN_CONFIG_ROOT ]]; then
+  dokku_log_fail "$PLUGIN_SERVICE: Please run: sudo dokku plugin:install"
+fi
 
-esac
+if [[ ! -d $PLUGIN_DATA_ROOT ]]; then
+  dokku_log_fail "$PLUGIN_SERVICE: Please run: sudo dokku plugin:install"
+fi
+
+fn-help "$@"
