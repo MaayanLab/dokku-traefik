@@ -17,19 +17,21 @@ cmd-traefik-list() {
 
 cmd-traefik-enable() {
   declare APP="$2"
-  echo "Configuring ${APP}..."
-  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/${APP}.yaml"
+  declare APP_DOMAIN=$(dokku domains:report "${APP}" | awk -F':' '/Domains app vhosts/{ gsub(/ /, "", $2); print $2 }')
+  declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
+  echo "Configuring ${APP} => ${APP_DOMAIN}..."
+  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/${APP_LABEL}.yaml"
 http:
   routers:
-    ${APP}:
-      rule: Host(`dokku.maayanlab.u8sand.net`)
+    ${APP_LABEL}:
+      rule: Host(\`${APP_DOMAIN}\`)
       entryPoints:
         - websecure
-      service: ${APP}
+      service: ${APP_LABEL}
       tls:
         certResolver: letsencrypt
   services:
-    ${APP}:
+    ${APP_LABEL}:
       loadBalancer:
         servers:
           - url: http://172.17.0.1:80/
@@ -37,8 +39,10 @@ EOF
 }
 cmd-traefik-disable() {
   declare APP="$2"
-  echo "Disabling ${APP}..."
-  rm "${PLUGIN_DATA_ROOT}/config/${APP}.yaml"
+  declare APP_DOMAIN=$(dokku domains:report "${APP}" | awk -F':' '/Domains app vhosts/{ gsub(/ /, "", $2); print $2 }')
+  declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
+  echo "Disabling ${APP} => ${APP_DOMAIN}..."
+  rm "${PLUGIN_DATA_ROOT}/config/${APP_LABEL}.yaml"
 }
 
 cmd-traefik-configure() {
