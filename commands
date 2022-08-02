@@ -11,4 +11,4 @@ if [[ ! -d $PLUGIN_DATA_ROOT ]]; then
   dokku_log_fail "$PLUGIN_SERVICE: Please run: sudo dokku plugin:install"
 fi
 
-fn-help "$@"
+fn-help-content "$@"
