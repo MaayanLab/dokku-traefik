@@ -9,7 +9,7 @@ if [[ -f "$PLUGIN_AVAILABLE_PATH/docker-options/functions" ]]; then
 fi
 
 cmd-traefik-list() {
-  ls "${PLUGIN_DATA_ROOT}/config/" | while read line; do
+  ls "${PLUGIN_DATA_ROOT}/config/apps/" | while read line; do
     declare APP="$(basename ${line} .yaml)";
     echo "${APP}";
   done
@@ -20,7 +20,7 @@ cmd-traefik-enable() {
   declare APP_DOMAIN=$(dokku domains:report "${APP}" | awk -F':' '/Domains app vhosts/{ gsub(/ /, "", $2); print $2 }')
   declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
   echo "Configuring ${APP}..."
-  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/${APP_LABEL}.yaml"
+  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
 http:
   routers:
     ${APP_LABEL}:
@@ -44,7 +44,7 @@ cmd-traefik-disable() {
   declare APP_DOMAIN=$(dokku domains:report "${APP}" | awk -F':' '/Domains app vhosts/{ gsub(/ /, "", $2); print $2 }')
   declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
   echo "Disabling ${APP} => ${APP_DOMAIN}..."
-  rm "${PLUGIN_DATA_ROOT}/config/${APP_LABEL}.yaml"
+  rm "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
 }
 
 cmd-traefik-configure() {
@@ -55,7 +55,7 @@ cmd-traefik-configure() {
     exit 1;
   fi
 
-  mkdir -p "${PLUGIN_DATA_ROOT}/config" "${PLUGIN_DATA_ROOT}/data"
+  mkdir -p "${PLUGIN_DATA_ROOT}/config/apps" "${PLUGIN_DATA_ROOT}/data"
   cat <<EOF > "${PLUGIN_DATA_ROOT}/traefik.yaml"
 providers:
   file:
