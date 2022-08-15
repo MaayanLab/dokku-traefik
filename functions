@@ -36,6 +36,7 @@ http:
         servers:
           - url: http://172.17.0.1:80/
 EOF
+  touch "${PLUGIN_DATA_ROOT}/config/apps.reload"
   echo "Should soon be available at =>"
   echo " https://${APP_DOMAIN}"
 }
