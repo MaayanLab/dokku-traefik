@@ -99,8 +99,7 @@ cmd-traefik-stop() {
 }
 
 cmd-traefik-restart() {
-  cmd-traefik-stop
-  cmd-traefik-start
+  cmd-traefik-stop && cmd-traefik-start
 }
 
 cmd-traefik-logs() {
