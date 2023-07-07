@@ -18,7 +18,7 @@ cmd-traefik-list() {
 cmd-traefik-enable() {
   declare APP="$2"
   declare APP_DOMAIN=$(dokku domains:report "${APP}" | awk -F':' '/Domains app vhosts/{ gsub(/ /, "", $2); print $2 }')
-  if [ ! -z "${APP_LABEL}" ]; then
+  if [ ! -z "${APP_DOMAIN}" ]; then
     declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
     echo "Configuring ${APP}..."
     cat << EOF > "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
