@@ -18,9 +18,10 @@ cmd-traefik-list() {
 cmd-traefik-enable() {
   declare APP="$2"
   declare APP_DOMAIN=$(dokku domains:report "${APP}" | awk -F':' '/Domains app vhosts/{ gsub(/ /, "", $2); print $2 }')
-  declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
-  echo "Configuring ${APP}..."
-  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
+  if [ ! -z "${APP_LABEL}" ]; then
+    declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
+    echo "Configuring ${APP}..."
+    cat << EOF > "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
 http:
   routers:
     ${APP_LABEL}:
@@ -36,9 +37,12 @@ http:
         servers:
           - url: http://172.17.0.1:80/
 EOF
-  touch "${PLUGIN_DATA_ROOT}/config/apps.reload"
-  echo "Should soon be available at =>"
-  echo " https://${APP_DOMAIN}"
+    touch "${PLUGIN_DATA_ROOT}/config/apps.reload"
+    echo "Should soon be available at =>"
+    echo " https://${APP_DOMAIN}"
+  else
+    echo "Could not determine app domain, please ensure proxy was setup."
+  fi
 }
 cmd-traefik-disable() {
   declare APP="$2"
