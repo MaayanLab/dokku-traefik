@@ -22,10 +22,10 @@ cmd-traefik-enable() {
     declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
     echo "Configuring ${APP}..."
     cat << EOF > "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
-http:
+tcp:
   routers:
     ${APP_LABEL}:
-      rule: Host(\`${APP_DOMAIN}\`)
+      rule: HostSNI(\`${APP_DOMAIN}\`)
       entryPoints:
         - websecure
       service: ${APP_LABEL}
@@ -35,7 +35,7 @@ http:
     ${APP_LABEL}:
       loadBalancer:
         servers:
-          - url: http://172.17.0.1:80/
+          - address: 172.17.0.1:80
 EOF
     touch "${PLUGIN_DATA_ROOT}/config/apps.reload"
     echo "Should soon be available at =>"
