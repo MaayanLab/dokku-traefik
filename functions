@@ -25,7 +25,7 @@ cmd-traefik-enable() {
 http:
   routers:
     ${APP_LABEL}:
-      rule: Host(\`${APP_DOMAIN}\`)
+      rule: HostSNI(\`${APP_DOMAIN}\`)
       entryPoints:
         - websecure
       service: ${APP_LABEL}
