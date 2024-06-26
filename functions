@@ -9,7 +9,7 @@ if [[ -f "$PLUGIN_AVAILABLE_PATH/docker-options/functions" ]]; then
 fi
 
 cmd-traefik-list() {
-  ls "${PLUGIN_DATA_ROOT}/config/apps/" | while read line; do
+  ls "${TRAEFIK_DATA_ROOT}/config/apps/" | while read line; do
     declare APP="$(basename ${line} .yaml)";
     echo "${APP}";
   done
@@ -21,7 +21,7 @@ cmd-traefik-enable() {
   if [ ! -z "${APP_DOMAIN}" ]; then
     declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
     echo "Configuring ${APP}..."
-    cat << EOF > "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
+    cat << EOF > "${TRAEFIK_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
 http:
   routers:
     ${APP_LABEL}:
@@ -32,7 +32,7 @@ http:
       tls:
         certResolver: letsencrypt
 EOF
-    touch "${PLUGIN_DATA_ROOT}/config/apps.reload"
+    touch "${TRAEFIK_DATA_ROOT}/config/apps.reload"
     echo "Should soon be available at =>"
     echo " https://${APP_DOMAIN}"
   else
@@ -44,7 +44,7 @@ cmd-traefik-disable() {
   declare APP_DOMAIN=$(dokku domains:report "${APP}" | awk -F':' '/Domains app vhosts/{ gsub(/ /, "", $2); print $2 }')
   declare APP_LABEL=$(sed 's/\./-/g' <<< $APP_DOMAIN)
   echo "Disabling ${APP} => ${APP_DOMAIN}..."
-  rm "${PLUGIN_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
+  rm "${TRAEFIK_DATA_ROOT}/config/apps/${APP_LABEL}.yaml"
 }
 
 cmd-traefik-configure() {
@@ -55,8 +55,8 @@ cmd-traefik-configure() {
     exit 1;
   fi
 
-  mkdir -p "${PLUGIN_DATA_ROOT}/config/apps" "${PLUGIN_DATA_ROOT}/data"
-  cat <<EOF > "${PLUGIN_DATA_ROOT}/traefik.yaml"
+  mkdir -p "${TRAEFIK_DATA_ROOT}/config/apps" "${TRAEFIK_DATA_ROOT}/data"
+  cat <<EOF > "${TRAEFIK_DATA_ROOT}/traefik.yaml"
 providers:
   file:
     directory: /config
@@ -73,8 +73,8 @@ certificatesResolvers:
       storage: "/data/acme.json"
       tlsChallenge: {}
 EOF
-  mkdir -p "${PLUGIN_DATA_ROOT}/config/apps" "${PLUGIN_DATA_ROOT}/data"
-  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/service.yaml"
+  mkdir -p "${TRAEFIK_DATA_ROOT}/config/apps" "${TRAEFIK_DATA_ROOT}/data"
+  cat <<EOF > "${TRAEFIK_DATA_ROOT}/config/service.yaml"
 http:
   services:
     dokku-http:
@@ -96,9 +96,9 @@ cmd-traefik-start() {
     --name="${PLUGIN_CONTAINER_NAME}" \
     --network=host \
     --restart=unless-stopped \
-    -v "${PLUGIN_DATA_ROOT}/traefik.yaml:/etc/traefik/traefik.yaml" \
-    -v "${PLUGIN_DATA_ROOT}/config/:/config" \
-    -v "${PLUGIN_DATA_ROOT}/data/:/data" \
+    -v "${TRAEFIK_DATA_ROOT}/traefik.yaml:/etc/traefik/traefik.yaml" \
+    -v "${TRAEFIK_DATA_ROOT}/config/:/config" \
+    -v "${TRAEFIK_DATA_ROOT}/data/:/data" \
     traefik
 }
 
