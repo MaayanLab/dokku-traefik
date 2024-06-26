@@ -28,14 +28,9 @@ http:
       rule: Host(\`${APP_DOMAIN}\`)
       entryPoints:
         - websecure
-      service: ${APP_LABEL}
+      service: dokku-http
       tls:
         certResolver: letsencrypt
-  services:
-    ${APP_LABEL}:
-      loadBalancer:
-        servers:
-          - url: http://172.17.0.1:80/
 EOF
     touch "${PLUGIN_DATA_ROOT}/config/apps.reload"
     echo "Should soon be available at =>"
@@ -77,6 +72,15 @@ certificatesResolvers:
       email: "${DOKKU_LETSENCRYPT_EMAIL}"
       storage: "/data/acme.json"
       tlsChallenge: {}
+EOF
+  mkdir -p "${PLUGIN_DATA_ROOT}/config/apps" "${PLUGIN_DATA_ROOT}/data"
+  cat <<EOF > "${PLUGIN_DATA_ROOT}/config/service.yaml"
+http:
+  services:
+    dokku-http:
+      loadBalancer:
+        servers:
+          - url: http://172.17.0.1:80/
 EOF
 }
 
